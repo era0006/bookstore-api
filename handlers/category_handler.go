@@ -3,17 +3,14 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/era0006/bookstore-api/database"
 	"github.com/era0006/bookstore-api/models"
 	"github.com/gin-gonic/gin"
 )
 
-var categories = []models.Category{
-	{ID: 1, Name: "Programming"},
-	{ID: 2, Name: "Software Design"},
-}
-var nextCategoryID = 3
-
 func GetCategories(c *gin.Context) {
+	var categories []models.Category
+	database.DB.Find(&categories)
 	c.JSON(http.StatusOK, categories)
 }
 
@@ -27,8 +24,11 @@ func CreateCategory(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Name is required"})
 		return
 	}
-	category.ID = nextCategoryID
-	nextCategoryID++
-	categories = append(categories, category)
+
+	result := database.DB.Create(&category)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create category"})
+		return
+	}
 	c.JSON(http.StatusCreated, category)
 }

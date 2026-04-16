@@ -1,9 +1,9 @@
 package models
 
 type Book struct {
-	ID         int     `json:"id"`
-	Title      string  `json:"title"`
-	AuthorID   int     `json:"author_id"`
-	CategoryID int     `json:"category_id"`
+	ID         uint    `gorm:"primaryKey" json:"id"`
+	Title      string  `gorm:"not null" json:"title"`
+	AuthorID   uint    `json:"author_id"`
+	CategoryID uint    `json:"category_id"`
 	Price      float64 `json:"price"`
 }

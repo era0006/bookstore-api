@@ -1,6 +1,6 @@
 package models
 
 type Author struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uint   `gorm:"primaryKey" json:"id"`
+	Name string `gorm:"not null;unique" json:"name"`
 }

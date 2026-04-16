@@ -3,17 +3,14 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/era0006/bookstore-api/database"
 	"github.com/era0006/bookstore-api/models"
 	"github.com/gin-gonic/gin"
 )
 
-var authors = []models.Author{
-	{ID: 1, Name: "Alan A.A. Donovan"},
-	{ID: 2, Name: "Robert C. Martin"},
-}
-var nextAuthorID = 3
-
 func GetAuthors(c *gin.Context) {
+	var authors []models.Author
+	database.DB.Find(&authors)
 	c.JSON(http.StatusOK, authors)
 }
 
@@ -27,8 +24,11 @@ func CreateAuthor(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Name is required"})
 		return
 	}
-	author.ID = nextAuthorID
-	nextAuthorID++
-	authors = append(authors, author)
+
+	result := database.DB.Create(&author)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create author"})
+		return
+	}
 	c.JSON(http.StatusCreated, author)
 }
